@@ -43,7 +43,7 @@ export class FaceScanComponent {
         this.video.srcObject = stream;
         this.video.addEventListener('play', async() => {
           try{
-            const results=await this.faceapI.FaceDetection(period,this.video)
+            let results=await this.faceapI.FaceDetection(period,this.video)
             console.log("Result", results);
          
         }catch(error){
