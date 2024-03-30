@@ -88,7 +88,6 @@ export class FaceScanComponent {
   loadPeriod(){
     console.log(this.holidayArray)
     if(!this.holidayArray.includes(this.getDates())){
-      // this.streamVideo();
       this.check.getAdminData().schedule.forEach((i:any)=>{
         let key=Object.keys(i)
         console.log(key)
