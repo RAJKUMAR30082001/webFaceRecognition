@@ -19,7 +19,7 @@ export class FaceScanComponent {
   constructor(private faceapI:FaceApiService, private render: Renderer2,private adminService:AdminService,private stdService:StudentCouchService,private check:LocalStroageService) { }
 
   ngOnInit() {
-
+    this.stdService.showDetails()
     this.video = this.render.selectRootElement("#myVideo") as HTMLVideoElement;
     this.adminService.getUrl().subscribe(res=>{
       this.check.setAdminData(res)

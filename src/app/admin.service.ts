@@ -16,7 +16,7 @@ export class AdminService {
     return this.http.get<any>(this.baseUrl, { headers: this.Auth })
   }
   updateAdmin(data:any){
-    this.http.put<any>(this.baseUrl,{headers:this.Auth}).subscribe(res=>{
+    this.http.put<any>(this.baseUrl,data,{headers:this.Auth}).subscribe(res=>{
       console.log("updated",res)
     })
   }
