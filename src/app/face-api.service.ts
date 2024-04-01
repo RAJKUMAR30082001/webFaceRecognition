@@ -117,7 +117,7 @@ export class FaceApiService {
     let results = await faceapi.detectAllFaces(this.video).withFaceLandmarks().withFaceDescriptors();
     console.log(results)
     console.log(this.getTime(),this.getTimes(this.startTime))
-    if(this.getTime()>=this.getTimes(this.startTime)+20){
+    if(this.getTime()>=this.getTimes(this.startTime)){
       console.log("yes end")
       this.updateRecord(faceScan)
     }
@@ -185,10 +185,10 @@ export class FaceApiService {
     this.adminService.getUrl().subscribe(data=>{
       totalHours=data.hours[this.subjectCode]
       data.hours[this.subjectCode]=totalHours+1
-      // this.adminService.updateAdmin(data)
+      this.adminService.updateAdmin(data)
     })
 
-    this.stdService.getFullDocument().subscribe(res => {
+    this.stdService.getFullDocument().subscribe(async(res) => {
       let stdData = res['2024'];
   
       this.attendanceRecordArray.forEach(record => {
@@ -206,24 +206,35 @@ export class FaceApiService {
                   }
               });
           }
-          else{
-            stdData[studentId].notification.push(`you are absent on ${new Date().getDate()} for  subject code ${this.subjectCode}`)
-            stdData[studentId].attendanceRecord.forEach((attendanceRecord: any) => {
-              if (attendanceRecord.hasOwnProperty(this.subjectCode)) {
-                  attendanceRecord[this.subjectCode]=this.getPercentage(0,totalHours+1,attendanceRecord[this.subjectCode]); 
-                 
-              }
-          });
-          }
+         
       });
-      //this.stdService.updateDocument(res)
-      // this.getValues()
+     stdData=await this.absenteesUpdate(stdData,totalHours)
+      this.stdService.updateDocument(res)
+      this.getValues()
   })
 }
 getPercentage(value: number,totalHours:number,currentPercentage:number):number{
-      let newPercentage=(currentPercentage*totalHours)+value
+      let newPercentage=(currentPercentage*(totalHours-1))+value
       return newPercentage/totalHours
 }
 
-
+absenteesUpdate(stdData:any,totalHours:number):any{
+  let keys=Object.keys(stdData)
+  keys.forEach((item:any)=>{
+   let bool=this.attendanceRecordArray.some(val=>{
+    val.hasOwnProperty(item)
+  })
+  if(!bool){
+    stdData[item].notification.push(`you are absent on ${new Date().getDate()} for  subject code ${this.subjectCode}`)
+    stdData[item].attendanceRecord.forEach((attendanceRecord: any) => {
+      if (attendanceRecord.hasOwnProperty(this.subjectCode)) {
+          attendanceRecord[this.subjectCode]=this.getPercentage(0,totalHours+1,attendanceRecord[this.subjectCode]); 
+         
+      }
+  });
+  }
+   })
+return  stdData
+      }
 }
+ 
